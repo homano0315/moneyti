@@ -1,1 +1,942 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MONEYTI - 고등학생 경제 성향 테스트</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Pretendard, Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    .container {
+      width: min(92%, 680px);
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 0;
+    }
+
+    .card {
+      width: 100%;
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 38px;
+      color: #132a52;
+    }
+
+    h2 {
+      font-size: 27px;
+      line-height: 1.45;
+    }
+
+    h3 {
+      margin-top: 30px;
+      color: #173d77;
+    }
+
+    p {
+      line-height: 1.7;
+    }
+
+    .subtitle {
+      color: #677287;
+      font-size: 17px;
+    }
+
+    .start-icon {
+      font-size: 56px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 17px 20px;
+      margin-top: 12px;
+      border-radius: 14px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .main-button {
+      background: #173d77;
+      color: white;
+      font-weight: bold;
+    }
+
+    .main-button:hover {
+      background: #102e5e;
+      transform: translateY(-2px);
+    }
+
+    .answer-button {
+      background: #f1f4f9;
+      color: #263348;
+      text-align: left;
+    }
+
+    .answer-button:hover {
+      background: #dfe8f5;
+    }
+
+    .progress-text {
+      font-size: 14px;
+      color: #778195;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 9px;
+      background: #e8edf5;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .progress {
+      height: 100%;
+      background: #3478d4;
+      transition: width .3s;
+    }
+
+    .result-type {
+      text-align: center;
+      background: linear-gradient(135deg, #173d77, #3878cf);
+      color: white;
+      padding: 28px;
+      border-radius: 20px;
+      margin-bottom: 25px;
+    }
+
+    .result-code {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: 4px;
+    }
+
+    .result-name {
+      font-size: 23px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .trait {
+      margin: 22px 0;
+    }
+
+    .trait-head {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .trait-bar {
+      background: #e7ebf1;
+      height: 12px;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .trait-fill {
+      height: 100%;
+      background: #3478d4;
+      border-radius: 20px;
+    }
+
+    .info-box {
+      background: #f7f9fc;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 15px;
+    }
+
+    .info-box strong {
+      display: block;
+      color: #173d77;
+      margin-bottom: 7px;
+      font-size: 17px;
+    }
+
+    .notice {
+      background: #fff9e8;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 25px;
+      font-size: 13px;
+      color: #66572e;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media(max-width: 600px) {
+      .card {
+        padding: 25px 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- 시작 화면 -->
+  <div class="card" id="startScreen">
+    <div class="start-icon">💰</div>
+
+    <h1>MONEYTI</h1>
+
+    <p class="subtitle">
+      24개의 질문으로 알아보는<br>
+      고등학생 경제 성향 테스트
+    </p>
+
+    <p>
+      소비, 저축, 위험 감수, 경제적 판단 습관을 분석해
+      나의 경제 유형과 투자 성향을 알아보세요.
+    </p>
+
+    <button class="main-button" onclick="startTest()">
+      테스트 시작하기
+    </button>
+  </div>
+
+
+  <!-- 질문 화면 -->
+  <div class="card hidden" id="questionScreen">
+
+    <div class="progress-text" id="progressText"></div>
+
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <h2 id="question"></h2>
+
+    <div id="answers"></div>
+
+  </div>
+
+
+  <!-- 결과 화면 -->
+  <div class="card hidden" id="resultScreen">
+
+    <div class="result-type">
+      <div>나의 경제 유형</div>
+      <div class="result-code" id="resultCode"></div>
+      <div class="result-name" id="resultName"></div>
+    </div>
+
+    <p id="resultSummary"></p>
+
+    <h3>📊 나의 경제 성향</h3>
+
+    <div id="traitGraphs"></div>
+
+    <div class="info-box">
+      <strong>💎 장점</strong>
+      <span id="strength"></span>
+    </div>
+
+    <div class="info-box">
+      <strong>⚠️ 주의할 점</strong>
+      <span id="weakness"></span>
+    </div>
+
+    <div class="info-box">
+      <strong>🔧 보완점</strong>
+      <span id="improvement"></span>
+    </div>
+
+    <div class="info-box">
+      <strong>💰 추천 경제 습관</strong>
+      <span id="habit"></span>
+    </div>
+
+    <div class="info-box">
+      <strong>📈 투자 성향</strong>
+      <span id="investment"></span>
+    </div>
+
+    <div class="notice">
+      이 테스트는 금융 교육을 목적으로 제작된 간단한 성향 테스트이며,
+      실제 투자 적합성 진단이나 투자 권유를 목적으로 하지 않습니다.
+    </div>
+
+    <button class="main-button" onclick="restartTest()">
+      다시 테스트하기
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const questions = [
+
+  // 소비 성향 I / D
+
+  {
+    text: "용돈을 받으면 가장 먼저 무엇을 하나요?",
+    axis: "ID",
+    answers: [
+      ["사고 싶었던 것을 바로 산다.", -2],
+      ["일단 필요한 것이 있는지 생각한다.", -1],
+      ["이번 달에 쓸 돈을 나눠 놓는다.", 1],
+      ["저축과 소비 계획을 먼저 세운다.", 2]
+    ]
+  },
+
+  {
+    text: "사고 싶은 옷이나 물건이 생겼다면?",
+    axis: "ID",
+    answers: [
+      ["돈이 있으면 바로 산다.", -2],
+      ["하루 정도 고민한 뒤 산다.", -1],
+      ["며칠간 생각하면서 필요성을 판단한다.", 1],
+      ["예산과 계획을 확인한 후 산다.", 2]
+    ]
+  },
+
+  {
+    text: "큰돈이 생기면 어떻게 사용하는 편인가요?",
+    axis: "ID",
+    answers: [
+      ["갖고 싶었던 것을 한꺼번에 산다.", -2],
+      ["평소보다 소비를 조금 늘린다.", -1],
+      ["여러 기간에 나누어서 사용한다.", 1],
+      ["목적별로 돈을 나누어 관리한다.", 2]
+    ]
+  },
+
+  {
+    text: "한 달 용돈을 관리하는 방식과 가장 가까운 것은?",
+    axis: "ID",
+    answers: [
+      ["필요할 때마다 그냥 쓴다.", -2],
+      ["대략적으로만 생각한다.", -1],
+      ["주 단위로 사용할 금액을 정한다.", 1],
+      ["처음부터 항목별 예산을 정한다.", 2]
+    ]
+  },
+
+  {
+    text: "할인 중인 상품을 발견했다면?",
+    axis: "ID",
+    answers: [
+      ["싸니까 일단 산다.", -2],
+      ["마음에 들면 사는 편이다.", -1],
+      ["원래 필요했던 것인지 생각한다.", 1],
+      ["예산과 필요성을 모두 확인한다.", 2]
+    ]
+  },
+
+  {
+    text: "월말에 용돈이 거의 남지 않았을 때 나는?",
+    axis: "ID",
+    answers: [
+      ["다음 용돈을 기다린다.", -2],
+      ["조금 불편하지만 크게 신경 쓰지 않는다.", -1],
+      ["다음 달에는 소비를 줄이려고 한다.", 1],
+      ["어디에 돈을 많이 썼는지 확인한다.", 2]
+    ]
+  },
+
+
+  // 저축 S / C
+
+  {
+    text: "용돈 10만 원을 받았다면 저축은?",
+    axis: "SC",
+    answers: [
+      ["거의 하지 않는다.", -2],
+      ["남으면 저축한다.", -1],
+      ["일정 금액을 저축한다.", 1],
+      ["먼저 저축하고 남은 돈을 쓴다.", 2]
+    ]
+  },
+
+  {
+    text: "사고 싶은 비싼 물건이 있다면?",
+    axis: "SC",
+    answers: [
+      ["가능하면 바로 사고 싶다.", -2],
+      ["부족하면 다른 방법을 찾아본다.", -1],
+      ["몇 달간 돈을 모아 산다.", 1],
+      ["목표 금액과 기간을 정해 모은다.", 2]
+    ]
+  },
+
+  {
+    text: "예상하지 못한 10만 원이 생긴다면?",
+    axis: "SC",
+    answers: [
+      ["원하는 것을 사는 데 대부분 쓴다.", -2],
+      ["절반 이상을 소비한다.", -1],
+      ["절반 이상을 저축한다.", 1],
+      ["대부분 저축하거나 목표 자금으로 둔다.", 2]
+    ]
+  },
+
+  {
+    text: "현재의 즐거움과 미래를 위한 준비 중 더 중요한 것은?",
+    axis: "SC",
+    answers: [
+      ["현재의 즐거움이 훨씬 중요하다.", -2],
+      ["현재를 조금 더 중요하게 생각한다.", -1],
+      ["미래 준비를 조금 더 중요하게 생각한다.", 1],
+      ["미래를 위해 지금 소비를 줄일 수 있다.", 2]
+    ]
+  },
+
+  {
+    text: "저축 목표를 세워본 경험은?",
+    axis: "SC",
+    answers: [
+      ["거의 없다.", -2],
+      ["가끔 생각만 해본다.", -1],
+      ["목표 금액을 정해본 적이 있다.", 1],
+      ["목표와 기간을 정해 꾸준히 모은다.", 2]
+    ]
+  },
+
+  {
+    text: "돈을 관리할 때 가장 가까운 방식은?",
+    axis: "SC",
+    answers: [
+      ["쓰고 남은 돈이 있으면 저축한다.", -2],
+      ["소비를 먼저 생각하는 편이다.", -1],
+      ["소비와 저축을 함께 생각한다.", 1],
+      ["저축 금액을 먼저 정한다.", 2]
+    ]
+  },
+
+
+  // 위험 A / T
+
+  {
+    text: "10만 원을 투자할 수 있다면 어떤 선택이 더 마음에 드나요?",
+    axis: "AT",
+    answers: [
+      ["큰 손실 가능성이 있어도 큰 수익을 노린다.", -2],
+      ["조금 위험해도 높은 수익을 기대한다.", -1],
+      ["수익이 조금 낮아도 안정성을 선택한다.", 1],
+      ["수익이 낮더라도 손실 가능성이 매우 낮은 것을 선택한다.", 2]
+    ]
+  },
+
+  {
+    text: "투자한 돈이 하루 만에 10% 떨어졌다면?",
+    axis: "AT",
+    answers: [
+      ["더 오를 수 있다고 생각하고 크게 신경 쓰지 않는다.", -2],
+      ["조금 걱정되지만 계속 지켜본다.", -1],
+      ["손실이 커질 가능성을 먼저 생각한다.", 1],
+      ["이런 변동성이 큰 투자는 피하고 싶다.", 2]
+    ]
+  },
+
+  {
+    text: "큰 수익을 얻을 가능성과 원금을 지키는 것 중 더 중요한 것은?",
+    axis: "AT",
+    answers: [
+      ["큰 수익 가능성", -2],
+      ["수익 가능성을 조금 더 중요하게 생각한다.", -1],
+      ["안정성을 조금 더 중요하게 생각한다.", 1],
+      ["원금을 지키는 것이 가장 중요하다.", 2]
+    ]
+  },
+
+  {
+    text: "친구가 최근 크게 오른 투자 상품을 알려준다면?",
+    axis: "AT",
+    answers: [
+      ["기회를 놓치기 전에 투자해보고 싶다.", -2],
+      ["소액 정도는 투자해보고 싶다.", -1],
+      ["위험성을 충분히 확인한 뒤 결정한다.", 1],
+      ["가격이 급등한 상품은 피하는 편이다.", 2]
+    ]
+  },
+
+  {
+    text: "돈을 잃을 가능성이 있는 선택에 대해 어떻게 생각하나요?",
+    axis: "AT",
+    answers: [
+      ["높은 수익을 위해 필요하다고 생각한다.", -2],
+      ["어느 정도 위험은 감수할 수 있다.", -1],
+      ["가능하면 위험을 줄이고 싶다.", 1],
+      ["돈을 잃을 가능성이 큰 선택은 피한다.", 2]
+    ]
+  },
+
+  {
+    text: "경제 활동에서 당신에게 더 중요한 것은?",
+    axis: "AT",
+    answers: [
+      ["새로운 기회", -2],
+      ["성장 가능성", -1],
+      ["안정적인 관리", 1],
+      ["손실 방지", 2]
+    ]
+  },
+
+
+  // 판단 P / F
+
+  {
+    text: "물건을 살 때 가격 비교를 얼마나 하나요?",
+    axis: "PF",
+    answers: [
+      ["거의 하지 않는다.", -2],
+      ["비싸면 가끔 한다.", -1],
+      ["여러 곳의 가격을 비교한다.", 1],
+      ["가격, 품질, 후기까지 확인한다.", 2]
+    ]
+  },
+
+  {
+    text: "SNS에서 인기 있는 상품을 보면?",
+    axis: "PF",
+    answers: [
+      ["나도 사고 싶어진다.", -2],
+      ["관심이 많이 생긴다.", -1],
+      ["왜 인기 있는지 찾아본다.", 1],
+      ["필요성과 가격을 먼저 판단한다.", 2]
+    ]
+  },
+
+  {
+    text: "친구들이 모두 새로운 물건을 가지고 있다면?",
+    axis: "PF",
+    answers: [
+      ["나도 사고 싶다.", -2],
+      ["조금 부럽고 고민한다.", -1],
+      ["나에게 필요한지 생각한다.", 1],
+      ["친구들과 상관없이 내 기준으로 판단한다.", 2]
+    ]
+  },
+
+  {
+    text: "큰돈을 사용하기 전 어떻게 하나요?",
+    axis: "PF",
+    answers: [
+      ["마음에 들면 결정한다.", -2],
+      ["잠깐 고민한다.", -1],
+      ["가격과 필요성을 비교한다.", 1],
+      ["여러 정보를 찾아본 뒤 결정한다.", 2]
+    ]
+  },
+
+  {
+    text: "잘 모르는 금융상품을 알게 되었다면?",
+    axis: "PF",
+    answers: [
+      ["주변 사람들이 좋다고 하면 관심을 갖는다.", -2],
+      ["수익률이 높으면 관심이 생긴다.", -1],
+      ["기본적인 정보를 찾아본다.", 1],
+      ["원리, 위험, 수수료 등을 자세히 확인한다.", 2]
+    ]
+  },
+
+  {
+    text: "경제적 목표를 세울 때 나는?",
+    axis: "PF",
+    answers: [
+      ["목표를 따로 세우지 않는 편이다.", -2],
+      ["대략적인 목표만 생각한다.", -1],
+      ["금액이나 기간을 정한다.", 1],
+      ["목표, 기간, 방법을 구체적으로 계획한다.", 2]
+    ]
+  }
+
+];
+
+
+let currentQuestion = 0;
+
+let scores = {
+  ID: 0,
+  SC: 0,
+  AT: 0,
+  PF: 0
+};
+
+
+function startTest() {
+
+  document.getElementById("startScreen").classList.add("hidden");
+
+  document.getElementById("questionScreen").classList.remove("hidden");
+
+  showQuestion();
+}
+
+
+function showQuestion() {
+
+  const q = questions[currentQuestion];
+
+  document.getElementById("progressText").innerText =
+    `${currentQuestion + 1} / ${questions.length}`;
+
+  document.getElementById("progress").style.width =
+    `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+  document.getElementById("question").innerText = q.text;
+
+  const answersDiv = document.getElementById("answers");
+
+  answersDiv.innerHTML = "";
+
+  q.answers.forEach(answer => {
+
+    const button = document.createElement("button");
+
+    button.className = "answer-button";
+
+    button.innerText = answer[0];
+
+    button.onclick = () => selectAnswer(q.axis, answer[1]);
+
+    answersDiv.appendChild(button);
+
+  });
+
+}
+
+
+function selectAnswer(axis, value) {
+
+  scores[axis] += value;
+
+  currentQuestion++;
+
+  if (currentQuestion < questions.length) {
+
+    showQuestion();
+
+  } else {
+
+    showResult();
+
+  }
+
+}
+
+
+const typeNames = {
+
+  ISAF: "충동적 도전자",
+  ISAP: "계산하는 도전자",
+  ISTF: "안전한 소비형",
+  ISTP: "현실적 소비형",
+
+  ICAF: "자유로운 소비형",
+  ICAP: "전략적 소비형",
+  ICTF: "감성 소비형",
+  ICTP: "신중한 현실형",
+
+  DSAF: "미래형 도전자",
+  DSAP: "전략적 투자형",
+  DSTF: "안전 저축형",
+  DSTP: "계획형 자산관리자",
+
+  DCAF: "계획적 경험형",
+  DCAP: "목표 소비형",
+  DCTF: "안정적 생활형",
+  DCTP: "균형 경제형"
+
+};
+
+
+function makeType() {
+
+  let type = "";
+
+  type += scores.ID >= 0 ? "D" : "I";
+
+  type += scores.SC >= 0 ? "S" : "C";
+
+  type += scores.AT >= 0 ? "T" : "A";
+
+  type += scores.PF >= 0 ? "P" : "F";
+
+  return type;
+
+}
+
+
+function showResult() {
+
+  document.getElementById("questionScreen").classList.add("hidden");
+
+  document.getElementById("resultScreen").classList.remove("hidden");
+
+  const type = makeType();
+
+  document.getElementById("resultCode").innerText = type;
+
+  document.getElementById("resultName").innerText =
+    typeNames[type] || "균형형 경제인";
+
+
+  const planned = type[0] === "D";
+  const saving = type[1] === "S";
+  const stable = type[2] === "T";
+  const analytical = type[3] === "P";
+
+
+  document.getElementById("resultSummary").innerText =
+    `${planned ? "계획적인" : "즉흥적인"} 소비 성향과 ` +
+    `${saving ? "저축 중심" : "소비 중심"}의 돈 관리 습관을 가지고 있으며, ` +
+    `${stable ? "안정성을 중시하는" : "새로운 기회와 수익을 추구하는"} 경제 성향이 나타납니다.`;
+
+
+  let strengths = [];
+
+  if (planned)
+    strengths.push("돈을 사용할 때 계획을 세우는 능력이 좋습니다.");
+  else
+    strengths.push("필요하거나 원하는 경험에 빠르게 돈을 사용할 수 있는 실행력이 있습니다.");
+
+  if (saving)
+    strengths.push("미래를 위해 돈을 모으는 습관을 만들 가능성이 높습니다.");
+  else
+    strengths.push("현재의 만족과 경험의 가치를 중요하게 생각합니다.");
+
+  if (stable)
+    strengths.push("경제적 위험을 신중하게 판단하는 편입니다.");
+  else
+    strengths.push("새로운 경제적 기회를 적극적으로 탐색하는 성향이 있습니다.");
+
+  if (analytical)
+    strengths.push("정보를 확인하고 비교한 뒤 판단하려는 성향이 강합니다.");
+  else
+    strengths.push("빠르게 상황을 판단하고 직관적으로 결정하는 능력이 있습니다.");
+
+  document.getElementById("strength").innerText =
+    strengths.join(" ");
+
+
+  let weakness = "";
+
+  if (!planned && !saving)
+    weakness += "충동적인 소비가 반복되면 필요한 순간에 사용할 돈이 부족할 수 있습니다. ";
+
+  if (!stable)
+    weakness += "높은 수익만 보고 위험성이 큰 선택을 할 가능성을 주의해야 합니다. ";
+
+  if (!analytical)
+    weakness += "광고, SNS 또는 주변 사람의 의견에 영향을 받아 경제적 결정을 내릴 수 있습니다. ";
+
+  if (weakness === "")
+    weakness =
+      "안정성과 계획을 지나치게 중요하게 생각하면 새로운 금융 경험이나 학습 기회를 피할 수 있습니다.";
+
+  document.getElementById("weakness").innerText = weakness;
+
+
+  let improvement = "";
+
+  if (!planned)
+    improvement += "용돈을 받으면 먼저 일주일 단위의 소비 한도를 정해보세요. ";
+
+  if (!saving)
+    improvement += "사용하고 남은 돈을 저축하기보다 먼저 일정 금액을 저축해보세요. ";
+
+  if (!stable)
+    improvement += "수익률뿐 아니라 손실 가능성도 함께 비교하는 습관을 만들어보세요. ";
+
+  if (!analytical)
+    improvement += "구매나 금융 선택 전에 최소 두 가지 이상의 정보를 비교해보세요. ";
+
+  if (improvement === "")
+    improvement =
+      "저축에만 집중하기보다 경제와 투자 원리를 공부하며 금융 지식을 넓혀보세요.";
+
+  document.getElementById("improvement").innerText =
+    improvement;
+
+
+  document.getElementById("habit").innerText =
+    "용돈을 받으면 저축 40%, 필요한 소비 40%, 자유 소비 20%처럼 목적별로 나누어 관리해보세요. " +
+    "한 달 동안 지출을 기록한 뒤 가장 많은 돈을 사용한 항목을 확인하는 것도 좋은 습관입니다.";
+
+
+  let investmentText = "";
+
+  if (!stable && analytical) {
+
+    investmentText =
+      "적극적·분석형 투자 성향입니다. 높은 수익 가능성에 관심이 있지만 정보를 분석한 뒤 결정하려는 성향이 있습니다. " +
+      "분산투자, ETF, 위험과 수익의 관계 등을 공부해보는 것을 추천합니다.";
+
+  } else if (!stable && !analytical) {
+
+    investmentText =
+      "적극적·직관형 투자 성향입니다. 높은 수익 가능성에 관심이 많을 수 있지만 유행이나 주변 의견에 영향을 받을 가능성도 있습니다. " +
+      "투자 전에 위험성과 손실 가능성을 확인하는 습관이 중요합니다.";
+
+  } else if (stable && analytical) {
+
+    investmentText =
+      "안정적·분석형 투자 성향입니다. 손실 가능성을 줄이고 충분한 정보를 확인한 뒤 판단하는 것을 선호합니다. " +
+      "예금, 적금, 채권, ETF와 분산투자의 원리를 공부해보는 것을 추천합니다.";
+
+  } else {
+
+    investmentText =
+      "안정적·직관형 투자 성향입니다. 큰 위험을 피하고 익숙하고 이해하기 쉬운 선택을 선호하는 편입니다. " +
+      "다양한 금융상품의 기본 원리를 조금씩 공부하면 경제적 선택의 폭을 넓힐 수 있습니다.";
+
+  }
+
+  document.getElementById("investment").innerText =
+    investmentText;
+
+
+  createGraphs();
+
+}
+
+
+function scorePercent(score) {
+
+  // 각 축 질문 6개 × 최대 2점 = +12
+  // 최소 -12, 최대 +12
+
+  return Math.round(((score + 12) / 24) * 100);
+
+}
+
+
+function createGraphs() {
+
+  const graphArea =
+    document.getElementById("traitGraphs");
+
+  graphArea.innerHTML = "";
+
+  const graphs = [
+
+    {
+      left: "즉흥 소비",
+      right: "계획 소비",
+      score: scores.ID
+    },
+
+    {
+      left: "소비 중심",
+      right: "저축 중심",
+      score: scores.SC
+    },
+
+    {
+      left: "도전적",
+      right: "안정적",
+      score: scores.AT
+    },
+
+    {
+      left: "직관적",
+      right: "분석적",
+      score: scores.PF
+    }
+
+  ];
+
+
+  graphs.forEach(graph => {
+
+    const percent =
+      scorePercent(graph.score);
+
+    const div =
+      document.createElement("div");
+
+    div.className = "trait";
+
+    div.innerHTML = `
+
+      <div class="trait-head">
+
+        <span>${graph.left}</span>
+
+        <span>${graph.right} ${percent}%</span>
+
+      </div>
+
+      <div class="trait-bar">
+
+        <div
+          class="trait-fill"
+          style="width:${percent}%">
+        </div>
+
+      </div>
+
+    `;
+
+    graphArea.appendChild(div);
+
+  });
+
+}
+
+
+function restartTest() {
+
+  currentQuestion = 0;
+
+  scores = {
+    ID: 0,
+    SC: 0,
+    AT: 0,
+    PF: 0
+  };
+
+  document.getElementById("resultScreen").classList.add("hidden");
+
+  document.getElementById("startScreen").classList.remove("hidden");
+
+  window.scrollTo(0,0);
+
+}
+
+</script>
+
+</body>
+</html>
