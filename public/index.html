@@ -1,1 +1,180 @@
-test
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    MONEYTI - 고등학생 경제 성향 테스트
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/style.css"
+  >
+</head>
+
+<body>
+
+<div class="container">
+
+  <div
+    class="card"
+    id="startScreen"
+  >
+    <div class="start-icon">
+      💰
+    </div>
+
+    <h1>MONEYTI</h1>
+
+    <p class="subtitle">
+      18개의 질문으로 알아보는<br>
+      고등학생 경제 성향 테스트
+    </p>
+
+    <div class="intro-box">
+      돈을 사용하는 방식,
+      저축 습관,
+      위험에 대한 태도,
+      경제적 판단 방식을 분석하여
+
+      <b>
+        나의 경제 성향과
+        어울리는 투자 방식을 알아봅니다.
+      </b>
+    </div>
+
+    <button
+      class="main-button"
+      onclick="startTest()"
+    >
+      테스트 시작하기
+    </button>
+  </div>
+
+  <div
+    class="card hidden"
+    id="questionScreen"
+  >
+
+    <div class="progress-area">
+
+      <div class="progress-top">
+        <span
+          class="progress-text"
+          id="progressText"
+        ></span>
+
+        <span
+          class="progress-percent"
+          id="progressPercent"
+        ></span>
+      </div>
+
+      <div class="progress-bar">
+        <div
+          class="progress"
+          id="progress"
+        ></div>
+      </div>
+
+    </div>
+
+    <div
+      class="category"
+      id="category"
+    ></div>
+
+    <h2 id="question"></h2>
+
+    <div id="answers"></div>
+
+    <button
+      class="back-button"
+      id="backButton"
+      onclick="previousQuestion()"
+    >
+      ← 이전 질문
+    </button>
+  </div>
+
+  <div
+    class="card hidden"
+    id="resultScreen"
+  >
+
+    <div class="result-type">
+
+      <div>
+        나의 경제 유형
+      </div>
+
+      <div
+        class="result-code"
+        id="resultCode"
+      ></div>
+
+      <div
+        class="result-name"
+        id="resultName"
+      ></div>
+    </div>
+
+    <p id="resultSummary"></p>
+
+    <h3>
+      📊 나의 경제 성향
+    </h3>
+
+    <div id="traitGraphs"></div>
+
+    <div class="info-box">
+      <strong>
+        💎 장점
+      </strong>
+
+      <span id="strength"></span>
+    </div>
+
+    <div class="info-box">
+      <strong>
+        ⚠️ 단점 및 주의할 점
+      </strong>
+
+      <span id="weakness"></span>
+    </div>
+
+    <h3>
+      📈 나에게 맞는 투자 방식
+    </h3>
+
+    <div
+      class="investment-card"
+      id="investmentDetail"
+    ></div>
+
+    <div class="notice">
+      MONEYTI는 경제·금융 교육을 위해 제작된 성향 테스트입니다.
+      실제 투자 적합성 진단이나 특정 금융상품 투자 권유가 아닙니다.
+    </div>
+
+    <button
+      class="main-button"
+      onclick="restartTest()"
+    >
+      다시 테스트하기
+    </button>
+  </div>
+
+</div>
+
+<script src="/app.js"></script>
+
+</body>
+</html>
