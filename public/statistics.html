@@ -1,1 +1,758 @@
-test
+<!DOCTYPE html>
+
+<html lang="ko">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    MONEYTI 전체 통계
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/style.css"
+  >
+
+</head>
+
+
+<body>
+
+
+<div class="statistics-container">
+
+
+  <div class="statistics-header">
+
+    <div>
+
+      <h1>
+        📊 MONEYTI 통계
+      </h1>
+
+      <p class="subtitle">
+
+        참여 학생들의 익명 응답을
+        종합한 경제 성향 통계입니다.
+
+      </p>
+
+    </div>
+
+
+    <a
+      class="link-button"
+      href="/"
+    >
+
+      테스트로 돌아가기
+
+    </a>
+
+  </div>
+
+
+
+  <!-- 요약 -->
+
+  <div class="stat-grid">
+
+
+    <div class="stat-summary">
+
+      <div class="stat-label">
+        총 참여자
+      </div>
+
+      <div
+        class="stat-number"
+        id="totalCount"
+      >
+        -
+      </div>
+
+    </div>
+
+
+    <div class="stat-summary">
+
+      <div class="stat-label">
+        가장 많은 유형
+      </div>
+
+      <div
+        class="stat-number"
+        id="topType"
+      >
+        -
+      </div>
+
+    </div>
+
+
+    <div class="stat-summary">
+
+      <div class="stat-label">
+        해당 유형 인원
+      </div>
+
+      <div
+        class="stat-number"
+        id="topTypeCount"
+      >
+        -
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+
+  <!-- 4축 -->
+
+  <div class="chart-card">
+
+    <h2>
+      전체 경제 성향
+    </h2>
+
+    <div id="traitStatistics"></div>
+
+  </div>
+
+
+
+  <!-- 유형별 -->
+
+  <div class="chart-card">
+
+    <h2>
+      16가지 경제 유형 분포
+    </h2>
+
+    <div id="typeStatistics"></div>
+
+  </div>
+
+
+
+  <!-- 문항별 -->
+
+  <div class="chart-card">
+
+    <h2>
+      18개 문항별 응답
+    </h2>
+
+    <p class="subtitle">
+
+      각 선택지가 전체 응답에서
+      차지하는 비율입니다.
+
+    </p>
+
+    <div id="questionStatistics"></div>
+
+  </div>
+
+
+</div>
+
+
+
+<script>
+
+
+const typeNames = {
+
+  ISAF: "자유로운 도전자",
+  ISAP: "분석하는 도전자",
+  ISTF: "안전 중심 실속형",
+  ISTP: "현실적인 관리형",
+
+  ICAF: "자유로운 소비형",
+  ICAP: "전략적 소비형",
+  ICTF: "감성적 소비형",
+  ICTP: "신중한 현실형",
+
+  DSAF: "미래형 도전자",
+  DSAP: "전략적 성장형",
+  DSTF: "안전 저축형",
+  DSTP: "계획형 자산관리자",
+
+  DCAF: "계획적 경험형",
+  DCAP: "목표 소비형",
+  DCTF: "안정적 생활형",
+  DCTP: "균형 경제형"
+
+};
+
+
+
+const questions = [
+
+  "용돈이나 사용할 수 있는 돈이 생기면 가장 먼저 무엇을 하나요?",
+
+  "사고 싶은 물건이 생겼을 때 나는?",
+
+  "평소보다 큰 돈이 갑자기 생겼다면 어떻게 사용할 것 같나요?",
+
+  "평소 돈을 사용하는 방식과 가장 가까운 것은?",
+
+  "평소보다 큰 돈을 한 번에 써야 하는 상황이라면?",
+
+  "용돈이나 사용할 돈을 받았을 때 저축은 어떻게 하나요?",
+
+  "사고 싶은 물건을 사기 위해 큰 돈이 필요하다면?",
+
+  "예상하지 못했던 큰 돈이 생겼다면?",
+
+  "현재의 즐거움과 미래를 위한 준비 중 더 중요한 것은?",
+
+  "작은 돈이 꾸준히 남는다면 어떻게 하는 편인가요?",
+
+  "큰 돈을 투자한다고 가정하면 어떤 선택이 더 마음에 드나요?",
+
+  "투자한 돈의 가치가 갑자기 크게 떨어졌다면 어떻게 할 것 같나요?",
+
+  "경제적으로 선택할 때 더 중요하게 생각하는 것은?",
+
+  "주변에서 최근 크게 오른 투자 상품이 화제가 된다면?",
+
+  "물건을 구매할 때 가격을 어떻게 확인하나요?",
+
+  "SNS에서 친구들이 많이 사용하는 상품을 발견했다면?",
+
+  "잘 모르는 금융상품이나 투자 방법을 알게 되었다면?",
+
+  "큰 돈을 사용하거나 중요한 경제적 결정을 해야 할 때 나는?"
+
+];
+
+
+
+async function loadStatistics() {
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/statistics"
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "통계 요청 실패"
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    renderSummary(data);
+
+    renderTraits(data);
+
+    renderTypes(data);
+
+    renderQuestions(data);
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    document.body.innerHTML += `
+
+      <div
+        style="
+          max-width:900px;
+          margin:20px auto;
+          padding:20px;
+          background:#fff1f1;
+          border-radius:12px;
+        "
+      >
+
+        통계 데이터를 불러오지 못했습니다.
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+
+function renderSummary(data) {
+
+  document
+    .getElementById("totalCount")
+    .textContent =
+    `${data.total}명`;
+
+
+  if (
+    data.mostCommonType
+  ) {
+
+    document
+      .getElementById("topType")
+      .innerHTML =
+
+      `${data.mostCommonType}<br>
+       <span style="
+         font-size:14px;
+         font-weight:500;
+       ">
+         ${typeNames[data.mostCommonType]}
+       </span>`;
+
+
+    document
+      .getElementById("topTypeCount")
+      .textContent =
+
+      `${data.mostCommonCount}명`;
+
+  }
+
+  else {
+
+    document
+      .getElementById("topType")
+      .textContent =
+      "아직 없음";
+
+    document
+      .getElementById("topTypeCount")
+      .textContent =
+      "0명";
+
+  }
+}
+
+
+
+function renderTraits(data) {
+
+  const total =
+    data.total;
+
+
+  const area =
+    document.getElementById(
+      "traitStatistics"
+    );
+
+
+  if (total === 0) {
+
+    area.innerHTML =
+      "<p>아직 응답이 없습니다.</p>";
+
+    return;
+
+  }
+
+
+  const groups = [
+
+    {
+      left: "즉흥 소비",
+      right: "계획 소비",
+
+      leftCount:
+        data.traits.I,
+
+      rightCount:
+        data.traits.D
+    },
+
+    {
+      left: "소비 중심",
+      right: "저축 중심",
+
+      leftCount:
+        data.traits.C,
+
+      rightCount:
+        data.traits.S
+    },
+
+    {
+      left: "도전형",
+      right: "안정형",
+
+      leftCount:
+        data.traits.A,
+
+      rightCount:
+        data.traits.T
+    },
+
+    {
+      left: "직관형",
+      right: "분석형",
+
+      leftCount:
+        data.traits.F,
+
+      rightCount:
+        data.traits.P
+    }
+
+  ];
+
+
+  area.innerHTML = "";
+
+
+  groups.forEach(group => {
+
+    const leftPercent =
+      Math.round(
+        group.leftCount
+        / total
+        * 100
+      );
+
+
+    const rightPercent =
+      100 -
+      leftPercent;
+
+
+    let dominantName;
+    let dominantPercent;
+
+
+    if (
+      rightPercent >=
+      leftPercent
+    ) {
+
+      dominantName =
+        group.right;
+
+      dominantPercent =
+        rightPercent;
+
+    }
+
+    else {
+
+      dominantName =
+        group.left;
+
+      dominantPercent =
+        leftPercent;
+
+    }
+
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    row.className =
+      "chart-row";
+
+
+    row.innerHTML = `
+
+      <div class="chart-labels">
+
+        <span>
+          ${group.left}
+          ${leftPercent}%
+        </span>
+
+        <span>
+          ${group.right}
+          ${rightPercent}%
+        </span>
+
+      </div>
+
+      <div class="chart-track">
+
+        <div
+          class="chart-fill"
+          style="width:${dominantPercent}%"
+        ></div>
+
+      </div>
+
+      <div class="chart-value">
+
+        ${dominantName}
+        ${dominantPercent}%
+
+      </div>
+
+    `;
+
+
+    area.appendChild(row);
+
+  });
+
+}
+
+
+
+function renderTypes(data) {
+
+  const area =
+    document.getElementById(
+      "typeStatistics"
+    );
+
+
+  area.innerHTML = "";
+
+
+  const entries =
+    Object.entries(
+      data.typeCounts
+    )
+    .sort(
+      (a, b) =>
+        b[1] - a[1]
+    );
+
+
+  const maxCount =
+    Math.max(
+      1,
+      ...entries.map(
+        item => item[1]
+      )
+    );
+
+
+  entries.forEach(
+    ([type, count]) => {
+
+      const width =
+        count === 0
+          ? 0
+          : Math.round(
+              count /
+              maxCount
+              * 100
+            );
+
+
+      const percent =
+        data.total === 0
+          ? 0
+          : Math.round(
+              count /
+              data.total
+              * 100
+            );
+
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+
+      row.className =
+        "type-row";
+
+
+      row.innerHTML = `
+
+        <div class="type-name">
+
+          ${type}<br>
+
+          <span style="
+            font-size:12px;
+            font-weight:400;
+            color:#6c778a;
+          ">
+
+            ${typeNames[type]}
+
+          </span>
+
+        </div>
+
+
+        <div class="type-bar">
+
+          <div
+            class="type-fill"
+            style="width:${width}%"
+          ></div>
+
+        </div>
+
+
+        <div>
+
+          ${count}명<br>
+
+          <span
+            style="
+              font-size:12px;
+              color:#768195;
+            "
+          >
+
+            ${percent}%
+
+          </span>
+
+        </div>
+
+      `;
+
+
+      area.appendChild(row);
+
+    }
+  );
+
+}
+
+
+
+function renderQuestions(data) {
+
+  const area =
+    document.getElementById(
+      "questionStatistics"
+    );
+
+
+  area.innerHTML = "";
+
+
+  data.questionCounts.forEach(
+    (counts, questionIndex) => {
+
+
+      const total =
+        counts.reduce(
+          (a, b) =>
+            a + b,
+          0
+        );
+
+
+      const block =
+        document.createElement(
+          "div"
+        );
+
+
+      block.className =
+        "question-stat";
+
+
+      let html = `
+
+        <strong>
+
+          ${questionIndex + 1}.
+          ${questions[questionIndex]}
+
+        </strong>
+
+      `;
+
+
+      counts.forEach(
+        (count, answerIndex) => {
+
+
+          const percent =
+            total === 0
+
+              ? 0
+
+              : Math.round(
+                  count /
+                  total
+                  * 100
+                );
+
+
+          html += `
+
+            <div class="answer-stat-row">
+
+              <div>
+                선택지 ${answerIndex + 1}
+              </div>
+
+              <div class="small-track">
+
+                <div
+                  class="small-fill"
+                  style="width:${percent}%"
+                ></div>
+
+              </div>
+
+              <div>
+                ${percent}%
+              </div>
+
+            </div>
+
+          `;
+
+        }
+      );
+
+
+      block.innerHTML =
+        html;
+
+
+      area.appendChild(
+        block
+      );
+
+    }
+  );
+
+}
+
+
+
+loadStatistics();
+
+
+</script>
+
+
+</body>
+
+</html>
