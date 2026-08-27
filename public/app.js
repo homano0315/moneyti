@@ -522,7 +522,7 @@ function showResult() {
     makeType(scores);
 
 
-  saveResult();
+
 
 
   document
